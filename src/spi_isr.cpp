@@ -31,6 +31,7 @@
 // ----------------- Instantiating in your code
 // You will need to derive your own class from this class and over-ride
 // readMyRegs and writeMyRegs
+/*
 class cSpi_isr_derived : public cSpi_isr {
    public:
    bool readMyRegs(uint16_t len, uint16_t addr, byte data[]){
@@ -40,12 +41,15 @@ class cSpi_isr_derived : public cSpi_isr {
       return writeRegs(len, addr, data);
    }
 };
+*/
 // You will need to connect SPI0_Handler to the ISR that is imlemented 
 // in the spi_isr class
+/*
 cSpi_isr_derived spi_isr;
 void SPI0_Handler() {
   spi_isr.SPI0_Handler();
 }
+*/
 // ---------------------------------------------
 
 
