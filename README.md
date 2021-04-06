@@ -1,6 +1,7 @@
 # spi_isr
 Arduino library to support spi slave interrupt service routines.  
 Hard coded for SPI0 on ATSAM3X (ie Arduino Due).  
+Tested with ATSAM3X and Raspberry Pi. See spi master test code for the RPi in the python directory.
 You will need to do the following in order to use this library:
 1. Include <spi_isr.h> and <SPI.h> 
 2. From setup, call spi_isr_init() with the pin number used for spi chip select.
