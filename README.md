@@ -1,11 +1,13 @@
 # spi_isr
 Arduino library to support spi slave interrupt service routines.  
-You will need to do the following in order to use this library:  
-1. From setup, call spi_isr_init() with the pin number used for spi chip select.
-2. Implement two functions, readRegs() and writeRegs(). These functions transfer data to and from the data buffers defined in the library. 
-3. link readRegs() and writeRegs() to virtual functions defined in the library.
-4. Link SPI0_Handler().
-5. From loop, call spi_update_regs().
+Hard coded for SPI0 on ATSAM3X (ie Arduino Due).  
+You will need to do the following in order to use this library:
+1. Include <spi_isr.h> and <SPI.h> 
+2. From setup, call spi_isr_init() with the pin number used for spi chip select.
+3. Implement two functions, readRegs() and writeRegs(). These functions transfer data to and from the data buffers defined in the library. 
+4. link readRegs() and writeRegs() to virtual functions defined in the library.
+5. Link SPI0_Handler().
+6. From loop, call spi_update_regs().
 
 Read and write requests must be formed into a series of messages.  
 READ_INIT and WRITE_INIT messages allow the user to initialize a read or write, specifying the data length and address.  
