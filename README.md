@@ -8,7 +8,7 @@ You will need to do the following in order to use this library:
 5. From loop, call spi_update_regs().
 
 Read and write requests must be formed into a series of messages.  
-These messages allow the user to initialize a read or write, specifying the data length and address.  
+READ_INIT and WRITE_INIT messages allow the user to initialize a read or write, specifying the data length and address.  
 The ISR does not actually read or write data to the users registers. This must be performed in a regularly 
 scheduled function call, which tests for read or write requests, and copies data to or from a buffer that is
 local to the isr.  
@@ -46,20 +46,20 @@ Individual messages can be combined into read and write data sequences
 
 ## Examples of each message type:  
 ## WRITE_INIT or READ_INIT: 
-|           MOSI             |     MISO      |
-| -------------------------- | ------------- |
-|SYNC1_NIBBLE, ctrlNibble    | 0x0           |
-|SYNC2_NIBBLE, dataLen[11:8] | 0x0           |
-|dataLen[7:0]                | 0x0           |
-|address[15:8]               | 0x0           |
-|address[7:0]                | 0x0           |
+|           MOSI               |     MISO      |
+| ---------------------------- | ------------- |
+|SYNC1_NIBBLE, READ/WRITE_INIT | 0x0           |
+|SYNC2_NIBBLE, dataLen[11:8]   | 0x0           |
+|dataLen[7:0]                  | 0x0           |
+|address[15:8]                 | 0x0           |
+|address[7:0]                  | 0x0           |
 
 ## DATA_ACCESS:
 If the previous message was a WRITE_INIT then the data is in MOSI,
 else if the previous message was a READ_INIT then the data is in MISO
 |           MOSI             |     MISO      |
 | -------------------------- | ------------- |
-|SYNC1_NIBBLE, ctrlNibble    | 0x0           |
+|SYNC1_NIBBLE, DATA_ACCESS   | 0x0           |
 |SYNC2_NIBBLE, 0x0           | 0x0           |
 |data0                       | data0         |
 |data1                       | data1         |
@@ -71,7 +71,7 @@ else if the previous message was a READ_INIT then the data is in MISO
 ## STATUS_READ:    
 |           MOSI             |     MISO      |
 | -------------------------- | ------------- |
-|SYNC1_NIBBLE, ctrlNibble    | 0x0           |
+|SYNC1_NIBBLE, STATUS_READ   | 0x0           |
 |SYNC2_NIBBLE, 0x0           | 0x0           |
 |0x0                         | status        |
 
