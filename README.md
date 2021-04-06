@@ -1,18 +1,38 @@
 # spi_isr
 Arduino library to support spi slave interrupt service routines.  
-Read and write requests must be formed into a series of messages. 
-There are 4 message types:
-1. WRITE_INIT 0x0. Request a write of x data bytes to address y
-2. READ_INIT 0x1. Request a read of x data bytes from address y.
-3. DATA_ACCESS 0x2. Read or write the data
-4. STATUS_READ 0x3. Check the status of the last operation.
-These are the error codes returned by STATUS_READ:
-RX_RDY_SPI_STATUS_MASK 0x1. Receive data has been read and is ready for transfer
-WR_COMP_SPI_STATUS_MASK 0x2. Write data has been written.
-RX_OVR_SPI_STATUS_MASK 0x4. SPI receive over run error. 
-TX_UNDR_SPI_STATUS_MASK 0x8. SPI transmit under run error.
-WR_REG_ERROR_SPI_STATUS_MASK 0x10. Unspecified write error.
-RD_REG_ERROR_SPI_STATUS_MASK 0x20. Unspecified read error.
+You will need to do the following in order to use this library:  
+1. From setup, call spi_isr_init() with the pin number used for spi chip select.
+2. Implement two functions, readRegs() and writeRegs(). These functions transfer data to and from the data buffers defined in the library. 
+3. link readRegs() and writeRegs() to virtual functions defined in the library.
+4. Link SPI0_Handler().
+5. From loop, call spi_update_regs().
+
+Read and write requests must be formed into a series of messages.  
+These messages allow the user to initialize a read or write, specifying the data length and address.  
+The ISR does not actually read or write data to the users registers. This must be performed in a regularly 
+scheduled function call, which tests for read or write requests, and copies data to or from a buffer that is
+local to the isr.  
+The user must ensure that they call the spi_update_regs function from their main loop. 
+Then spi_update_regs will check to determine if there is data to be 
+read or written and call readRegs or writeRegs if required.
+
+Control message commands:
+| Command       |  Value  | Description                                  |
+| ------------- | ------- | -------------------------------------------- |
+| WRITE_INIT    | 0x0     | Request a write of x data bytes to address y |
+| READ_INIT     | 0x1     | Request a read of x data bytes from address y|
+| DATA_ACCESS   | 0x2     | Read or write the data                       |
+| STATUS_READ   | 0x3     | Check the status of the last operation       |
+
+Error codes returned by STATUS_READ:
+|        Error                 | Mask |        Description                                  |
+| ---------------------------- | ---- | --------------------------------------------------- |
+|RX_RDY_SPI_STATUS_MASK        | 0x1  | Receive data has been read and is ready for transfer|
+|WR_COMP_SPI_STATUS_MASK       | 0x2  | Write data has been written                         |
+|RX_OVR_SPI_STATUS_MASK        | 0x4  | SPI receive over run error                          | 
+|TX_UNDR_SPI_STATUS_MASK       | 0x8  | SPI transmit under run error                        |
+|WR_REG_ERROR_SPI_STATUS_MASK  | 0x10 | Unspecified write error                             |
+|RD_REG_ERROR_SPI_STATUS_MASK  | 0x20 | Unspecified read error                              |
 
 Individual messages can be combined into read and write data sequences
 ## Read sequence
@@ -59,9 +79,10 @@ else if the previous message was a READ_INIT then the data is in MISO
 SYNC1_NIBBLE 0x50
 SYNC2_NIBBLE 0xa0
 
+## Implementing readRegs and writeRegs
 You will need to over-ride the virtual functions, readMyRegs and writeMyRegs, and
 then create a link to your own functions.  
-These functions will be called when you call update_regs from your main loop.
+These functions will be called when you call spi_update_regs from your main loop.
 It is entirely up to the user to decide how to interpret the address and how to combine bytes into
 16-bit and 32-bit values.  
 readMyRegs and writeMyRegs take a 16-bit data length, 16-bit address, and a pointer to a byte data array.  
