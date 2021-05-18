@@ -78,7 +78,7 @@ cSpi_isr::cSpi_isr() {}
 
 void cSpi_isr::SPI0_Handler() {
   NVIC_DisableIRQ(SPI0_IRQn);
-  PIOB->PIO_SODR = PIO_SODR_P26;  // much faster than digitalWrite(LED_BUILTIN, HIGH);
+  //PIOB->PIO_SODR = PIO_SODR_P26;  // much faster than digitalWrite(LED_BUILTIN, HIGH);
   uint32_t iStatus = REG_SPI0_SR;
 
   // check for errors first. Then they can be reported immediately
@@ -231,7 +231,7 @@ void cSpi_isr::SPI0_Handler() {
     }
   }
 
-  PIOB->PIO_CODR = PIO_CODR_P26;
+  //PIOB->PIO_CODR = PIO_CODR_P26;
   //digitalWrite(LED_BUILTIN, LOW);
   NVIC_EnableIRQ(SPI0_IRQn);
 }
